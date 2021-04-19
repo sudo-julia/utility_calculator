@@ -25,32 +25,47 @@ def utility_sum():
             print(electricity)
             break
         except:
-            print("Please only input numbers.")
+            print("Please only input numbers.\n")
 
     total = water + gas + internet + electricity
     print("Utility Total: $" + str(total))
 
-    # Call utility_cost() function here then move below menu to end of function
+    utility_calc(total)
+
     select = input("Would you like to return to the main menu (m) or exit the program (e)?: ")
     if select == "m":
         menu()
     elif select == "e":
         sys.exit()
 
-    return total
-
-def validate_input(prompt, _type):
-    """get input and validate type"""
+"""
+def validate_input(prompt, float):
+    """"""get input and validate type""""""
     while True:
         var = input(prompt)
-        if isinstance(var, _type):
+        if isinstance(var, float):
             return var
 
 types = {'string': str, 'int': int}
+"""
 
 def utility_calc(total):
-    num_roommates = int(input("How many roommates this bill cycle?: "))
-    print(num_roommates)
+    with open("test.json", "r") as json_file:
+        json_data = json.load(json_file)
+    # iterate through json data to add up number of roommates, cats, etc.
+    for _ in json_data:
+        if _["type"] == "roommate":
+            num_roommates = 0
+            num_roommates += 1
+    for _ in json_data:
+        if _["type"] == "cat":
+            num_cats = 0
+            num_cats += 1
+    for _ in json_data:
+        if _["type"] == "kiln":
+            kiln_cost = input("Input kiln cost: $")
+            total = total - kiln_cost
+            return total
     total_per = round(total / num_roommates, 2)
     print("${}".format(total_per))
 
