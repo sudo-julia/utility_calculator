@@ -72,6 +72,7 @@ def utility_calc(total):
 
 
 def new_person():
+    """add a new person to the list of roommates"""
     user_input = (
         input("Would you like to add a new person or item? Choose (y) or (n): ")
         .casefold()
