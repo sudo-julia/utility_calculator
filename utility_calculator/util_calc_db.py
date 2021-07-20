@@ -2,6 +2,7 @@
 """database operations for utility_calculator"""
 from __future__ import annotations
 import sqlite3
+from utility_calculator import db_path
 
 
 def create_database():

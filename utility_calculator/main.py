@@ -3,15 +3,15 @@
 from __future__ import annotations
 import json
 from datetime import datetime
-from typing import Any
+from utils import clean_input, validate_float
 
 
 def menu():
     """run the menu"""
     print("\nSelect from the following menu options:")
-    select = input(
+    select = clean_input(
         "1. Utility Calculator (u)\n2. New Person (n)\n3. Exit (e)\n> "
-    ).casefold()
+    )
     if select in ("u", 1):
         utility_sum()
     elif select in ("n", 2):
@@ -32,23 +32,14 @@ def utility_sum():
 
     utility_calc(total)
 
-    select = input(
+    select = clean_input(
         "Would you like to return to the main menu (m) or exit the program (e)?\n> "
-    ).casefold()
+    )
 
     if select == "m":
         menu()
     elif select == "e":
         raise SystemExit
-
-
-def validate_float(prompt: str) -> float:
-    """validate input as a float and return"""
-    while True:
-        var: float | Any = input(prompt)
-        if isinstance(var, float):
-            return var
-        print("Please enter a valid number!")
 
 
 def utility_calc(total):
@@ -73,10 +64,8 @@ def utility_calc(total):
 
 def new_person():
     """add a new person to the list of roommates"""
-    user_input = (
-        input("Would you like to add a new person or item? Choose (y) or (n): ")
-        .casefold()
-        .strip()
+    user_input = clean_input(
+        "Would you like to add a new person or item? Choose (y) or (n): "
     )
     if user_input == "y":
         with open("test.json", "r") as json_file:
