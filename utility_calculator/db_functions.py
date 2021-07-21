@@ -13,8 +13,6 @@ def create_database():
         cursor.execute(
             """CREATE TABLE bills
                 (month TEXT,
-                start TEXT,
-                end TEXT,
                 category TEXT,
                 cost REAL,
                 paid INT);"""
@@ -22,7 +20,7 @@ def create_database():
         cursor.execute(
             """CREATE TABLE roommates
                 (month TEXT,
-                time REAL,
+                time_spent REAL,
                 name TEXT);"""
         )
     print(f"Utility database created at {db_path}.")
@@ -33,14 +31,19 @@ def add_roommate(month, time, name):
     with sqlite3.connect("utility_calculator.db") as conn:
         cursor = conn.cursor()
         cursor.execute("INSERT INTO roommates VALUES (?, ?, ?)", (month, time, name))
+    print(f"Added {name} for {time:0%} of {month}.")
 
 
-# pylint: disable=too-many-arguments
-def add_bill(month, start, end, category, cost, paid):
+def add_bill(month, category, cost, paid):
     """add a bill to the bills table"""
     with sqlite3.connect("utility_calculator.db") as conn:
         cursor = conn.cursor()
         cursor.execute(
-            "INSERT INTO bills VALUES (?, ?, ?, ?, ?, ?)",
-            (month, start, end, category, cost, paid),
+            "INSERT INTO bills VALUES (?, ?, ?, ?)",
+            (month, category, cost, paid),
         )
+    if paid:
+        paid = "paid"
+    else:
+        paid = "unpaid"
+    print(f"Added {paid} {category} bill valuing {cost} to {month}.")

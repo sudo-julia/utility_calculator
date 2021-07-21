@@ -20,13 +20,14 @@ def menu():
         raise SystemExit
 
 
-# TODO (jam) redundancy in this and utility_calc?
+# TODO (jam) rename
 def sum_utilites():
     """grab the cost of individual utilities and find the sum"""
-    water = utils.validate_float("Enter the water bill: $")
-    gas = utils.validate_float("Enter the gas bill: $")
-    internet = utils.validate_float("Enter the internet bill: $")
-    electricity = utils.validate_float("Enter the electrical bill: $")
+    # TODO (jam) change this to read from database OR insert all values
+    water = utils.get_float("Enter the water bill: $")
+    gas = utils.get_float("Enter the gas bill: $")
+    internet = utils.get_float("Enter the internet bill: $")
+    electricity = utils.get_float("Enter the electrical bill: $")
 
     total = water + gas + internet + electricity
     print(f"Utility Total: ${total}")
@@ -43,6 +44,7 @@ def sum_utilites():
         raise SystemExit
 
 
+# TODO (jam) rename
 def utility_calc(total):
     """perform the calculation of utilities"""
     # TODO (jam) overhaul, fetch data from database
@@ -69,23 +71,34 @@ def new_bill():
     utils.check_db()
 
     while True:
-        # month = utils.get_month()
-        raise NotImplementedError
+        month = utils.get_month()
+        category = utils.choose("Water or power bill? ", ("water", "power"))
+        cost = utils.get_float(f"Enter the cost of the {category} bill: ")
+        paid = int(utils.confirm("Was the bill paid? [Y/n] "))
+        paid_str = "unpaid"
+        if paid:
+            paid_str = "paid"
+
+        print(f"The {category} bill for {month} cost {cost} and was {paid_str}.")
+        if utils.confirm():
+            break
+    raise NotImplementedError
 
 
 def new_person():
     """add a new person to the list of roommates"""
     utils.check_db()
 
-    # TODO (jam) standardize this (>) and create function to check month formatting
-    #            as YYYY-MM
+    # TODO (jam) standardize this (>)
     while True:
         month = utils.get_month()
-        time_spent = utils.validate_float("Enter the amount of time spent home: ")
+        time_msg = "Enter the amount of time spent home (1.0 if inside housemate): "
+        # TODO (jam) option to enter time as a percent
+        time_spent = utils.get_float(time_msg)
         name = utils.clean_input("Enter the person's name: ").title()
 
         print(f"Month: {month}, Time spent at house: {time_spent}, Name: {name}")
-        if utils.confirm("Does this information look correct? [Y/n] "):
+        if utils.confirm():
             break
 
     db_functions.add_roommate(month, time_spent, name)

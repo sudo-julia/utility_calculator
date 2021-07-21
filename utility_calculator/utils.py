@@ -12,14 +12,34 @@ def check_db():
         create_database()
 
 
+def choose(prompt, options):
+    """return a value that matches a given option from options"""
+    while True:
+        option = clean_input(prompt)
+        if option in options:
+            return option
+        print(f"Please choose between {options[0]} and {options[1]}.")
+
+
 def clean_input(prompt):
     """return user input to a prompt, casefolded and stripped of whitespace"""
     return input(prompt).casefold().strip()
 
 
-def confirm(prompt):
+def confirm(prompt=None):
     """return True if user confirmed (entered 'y' or 'yes'), otherwise return False"""
+    if not prompt:
+        prompt = "Does this information look correct? [Y/n] "
     return clean_input(prompt) in ("y", "yes")
+
+
+def get_float(prompt):
+    """return user input to a prompt as a float"""
+    while True:
+        var = input(prompt)
+        if isinstance(var, float):
+            return var
+        print("Please enter a valid number!")
 
 
 def get_month():
@@ -30,12 +50,3 @@ def get_month():
         if re.search(month_regex, month):
             return month
         print("Please enter month as 'YYYY-MM'")
-
-
-def validate_float(prompt):
-    """return user input to a prompt as a float"""
-    while True:
-        var = input(prompt)
-        if isinstance(var, float):
-            return var
-        print("Please enter a valid number!")
