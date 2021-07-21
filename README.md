@@ -8,7 +8,10 @@ instead of a dependency to allow this program to run on a base Python install.
 
 ## TODO
 
+- [ ] Add bill via commandline args
 - [ ] Add roommate via commandline args
-- [ ] Add roommates interactively
 - [ ] Document code (specifically functions)
+- [ ] Add support for costly utilities that not everyone uses, such as a kiln
 - [X] Store data in database
+- [X] Add roommate interactively
+- [X] Add bill interactively

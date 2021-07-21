@@ -1,27 +1,30 @@
 # -*- coding: utf-8 -*-
 """utility calculator"""
 from __future__ import annotations
-import json
-from utility_calculator import db_functions
+from utility_calculator import db_path
 import utility_calculator.utils as utils
+from utility_calculator.db_functions import Database
+
+# TODO (jam) option for user to specify location
+database = Database(db_path)
 
 
 def menu():
     """run the menu"""
     print("\nSelect from the following menu options:")
-    select = utils.clean_input(
-        "1. Utility Calculator (u)\n2. New Roommate (n)\n3. Exit (e)\n> "
+    selection = utils.choose(
+        "1. Utility Calculator (u)\n2. New Roommate (n)\n3. Exit (e)\n> ",
+        ("u", "n", "e"),
     )
-    if select in ("u", 1):
-        sum_utilites()
-    elif select in ("n", 2):
+    if selection == "u":
+        utility_calc()
+    elif selection == "n":
         new_person()
-    elif select in ("e", 3):
+    elif selection == "e":
         raise SystemExit
 
 
-# TODO (jam) rename
-def sum_utilites():
+def utility_calc(quick=None):
     """grab the cost of individual utilities and find the sum"""
     # TODO (jam) change this to read from database OR insert all values
     water = utils.get_float("Enter the water bill: $")
@@ -32,47 +35,41 @@ def sum_utilites():
     total = water + gas + internet + electricity
     print(f"Utility Total: ${total}")
 
-    utility_calc(total)
+    if quick:
+        num_roommates = int(utils.clean_input("Enter the number of roommates: "))
+        print(f"Each roommate pays {total / num_roommates:.2f}")
+        raise SystemExit
 
-    select = utils.clean_input(
-        "Would you like to return to the main menu (m) or exit the program (e)?\n> "
+    sum_utilities(total)
+
+    selection = utils.choose(
+        "Would you like to return to the main menu (m) or exit the program (e)?\n> ",
+        ("m", "e"),
     )
 
-    if select == "m":
+    if selection == "m":
         menu()
-    elif select == "e":
+    elif selection == "e":
         raise SystemExit
 
 
-# TODO (jam) rename
-def utility_calc(total):
+def sum_utilities(total):
     """perform the calculation of utilities"""
     # TODO (jam) overhaul, fetch data from database
-    with open("test.json", "r") as json_file:
-        json_data = json.load(json_file)
-    # iterate through json data to add up number of roommates, cats, etc.
-    num_roommates = 0
-    num_cats = 0
-    for roommate in json_data:
-        if roommate["type"] == "roommate":
-            num_roommates += 1
-        elif roommate["type"] == "cat":
-            num_cats += 1
-        elif roommate["type"] == "kiln":
-            # TODO (jam) kiln operations
-            kiln_cost = input("Input kiln cost: $")
-            total = total - kiln_cost
-    total_per = round(total / num_roommates, 2)
-    print(f"${total_per}")
+    print(total)
+    raise NotImplementedError
 
 
 def new_bill():
     """add a bill to the database"""
+    # TODO (jam) let the user manually input the type of bill
+    #            once the database has entries, it can suggest from existing bill types
     utils.check_db()
+    bills = ("water", "power", "gas", "internet")
 
     while True:
         month = utils.get_month()
-        category = utils.choose("Water or power bill? ", ("water", "power"))
+        category = utils.choose("Water, power, gas or internet bill? ", bills)
         cost = utils.get_float(f"Enter the cost of the {category} bill: ")
         paid = int(utils.confirm("Was the bill paid? [Y/n] "))
         paid_str = "unpaid"
@@ -82,14 +79,14 @@ def new_bill():
         print(f"The {category} bill for {month} cost {cost} and was {paid_str}.")
         if utils.confirm():
             break
-    raise NotImplementedError
+
+    database.add_bill(month, category, cost, paid)
 
 
 def new_person():
     """add a new person to the list of roommates"""
     utils.check_db()
 
-    # TODO (jam) standardize this (>)
     while True:
         month = utils.get_month()
         time_msg = "Enter the amount of time spent home (1.0 if inside housemate): "
@@ -101,7 +98,7 @@ def new_person():
         if utils.confirm():
             break
 
-    db_functions.add_roommate(month, time_spent, name)
+    database.add_roommate(month, time_spent, name)
 
 
 # Total cost of utilties -> calculate kiln cost, subtract kiln cost

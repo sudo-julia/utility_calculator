@@ -6,6 +6,7 @@ from utility_calculator import db_path
 from utility_calculator.db_functions import create_database
 
 
+# TODO (jam) rename this file
 def check_db():
     """create the database if it doesn't exist"""
     if not os.path.exists(db_path):
@@ -18,7 +19,7 @@ def choose(prompt, options):
         option = clean_input(prompt)
         if option in options:
             return option
-        print(f"Please choose between {options[0]} and {options[1]}.")
+        print("Please choose between: ", *options)
 
 
 def clean_input(prompt):
@@ -36,10 +37,12 @@ def confirm(prompt=None):
 def get_float(prompt):
     """return user input to a prompt as a float"""
     while True:
-        var = input(prompt)
-        if isinstance(var, float):
+        try:
+            var = float(input(prompt))
             return var
-        print("Please enter a valid number!")
+        except ValueError:
+            print("Please enter a valid number!")
+            continue
 
 
 def get_month():
