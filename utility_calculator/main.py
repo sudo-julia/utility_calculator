@@ -2,37 +2,38 @@
 """utility calculator"""
 from __future__ import annotations
 import json
-from datetime import datetime
-from utils import clean_input, validate_float
+from utility_calculator import db_functions
+import utility_calculator.utils as utils
 
 
 def menu():
     """run the menu"""
     print("\nSelect from the following menu options:")
-    select = clean_input(
-        "1. Utility Calculator (u)\n2. New Person (n)\n3. Exit (e)\n> "
+    select = utils.clean_input(
+        "1. Utility Calculator (u)\n2. New Roommate (n)\n3. Exit (e)\n> "
     )
     if select in ("u", 1):
-        utility_sum()
+        sum_utilites()
     elif select in ("n", 2):
         new_person()
     elif select in ("e", 3):
         raise SystemExit
 
 
-def utility_sum():
+# TODO (jam) redundancy in this and utility_calc?
+def sum_utilites():
     """grab the cost of individual utilities and find the sum"""
-    water = validate_float("Enter the water bill: $")
-    gas = validate_float("Enter the gas bill: $")
-    internet = validate_float("Enter the internet bill: $")
-    electricity = validate_float("Enter the electrical bill: $")
+    water = utils.validate_float("Enter the water bill: $")
+    gas = utils.validate_float("Enter the gas bill: $")
+    internet = utils.validate_float("Enter the internet bill: $")
+    electricity = utils.validate_float("Enter the electrical bill: $")
 
     total = water + gas + internet + electricity
     print(f"Utility Total: ${total}")
 
     utility_calc(total)
 
-    select = clean_input(
+    select = utils.clean_input(
         "Would you like to return to the main menu (m) or exit the program (e)?\n> "
     )
 
@@ -43,6 +44,8 @@ def utility_sum():
 
 
 def utility_calc(total):
+    """perform the calculation of utilities"""
+    # TODO (jam) overhaul, fetch data from database
     with open("test.json", "r") as json_file:
         json_data = json.load(json_file)
     # iterate through json data to add up number of roommates, cats, etc.
@@ -57,50 +60,41 @@ def utility_calc(total):
             # TODO (jam) kiln operations
             kiln_cost = input("Input kiln cost: $")
             total = total - kiln_cost
-            return total
     total_per = round(total / num_roommates, 2)
     print(f"${total_per}")
 
 
+def new_bill():
+    """add a bill to the database"""
+    utils.check_db()
+
+    while True:
+        # month = utils.get_month()
+        raise NotImplementedError
+
+
 def new_person():
     """add a new person to the list of roommates"""
-    user_input = clean_input(
-        "Would you like to add a new person or item? Choose (y) or (n): "
-    )
-    if user_input == "y":
-        with open("test.json", "r") as json_file:
-            json_data = json.load(json_file)
+    utils.check_db()
 
-        new_name = input("Name: ")
-        new_type = input("Type (human, cat, item): ")
-        new_dict = {"name": new_name, "type": new_type}
+    # TODO (jam) standardize this (>) and create function to check month formatting
+    #            as YYYY-MM
+    while True:
+        month = utils.get_month()
+        time_spent = utils.validate_float("Enter the amount of time spent home: ")
+        name = utils.clean_input("Enter the person's name: ").title()
 
-        date = datetime.now()
-        timestamp = str(round(datetime.timestamp(date)))
+        print(f"Month: {month}, Time spent at house: {time_spent}, Name: {name}")
+        if utils.confirm("Does this information look correct? [Y/n] "):
+            break
 
-        json_data["dt"] = timestamp
-        json_data["people"].append(new_dict)
+    db_functions.add_roommate(month, time_spent, name)
 
-        with open("test.json", "w") as json_file:
-            json.dump(json_data, json_file, indent=4)
-
-    elif user_input == "n":
-        menu()
-    elif user_input == "e":
-        raise SystemExit
-    else:
-        menu()
-
-
-# Use a chain map for default settings when intializing new list info.
 
 # Total cost of utilties -> calculate kiln cost, subtract kiln cost
 # -> calculate price per day for bill period ->
 # Charge cats and subtract that from total ->
 # divide total remaining cost by number of roommates -> charge roommates
-
-# Complete: Create function that adds new roommate/cat to main database
-# if water month then factor in 2 month cost with days of cats
 
 if __name__ == "__main__":
     menu()

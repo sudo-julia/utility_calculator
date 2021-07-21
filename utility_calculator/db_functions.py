@@ -8,7 +8,7 @@ from utility_calculator import db_path
 def create_database():
     """create a database with the default tables"""
     # context manager will automatically call conn.commit() when closed
-    with sqlite3.connect("utility_calculator.db") as conn:
+    with sqlite3.connect(db_path) as conn:
         cursor = conn.cursor()
         cursor.execute(
             """CREATE TABLE bills
@@ -25,6 +25,7 @@ def create_database():
                 time REAL,
                 name TEXT);"""
         )
+    print(f"Utility database created at {db_path}.")
 
 
 def add_roommate(month, time, name):

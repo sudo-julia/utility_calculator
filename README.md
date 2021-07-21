@@ -8,5 +8,7 @@ instead of a dependency to allow this program to run on a base Python install.
 
 ## TODO
 
-- [ ] Store data in database
-- [ ] Add roommates interactively or through commandline arguments
+- [ ] Add roommate via commandline args
+- [ ] Add roommates interactively
+- [ ] Document code (specifically functions)
+- [X] Store data in database
