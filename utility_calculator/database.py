@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 """database operations for utility_calculator"""
-from __future__ import annotations
 import sqlite3
 
 
@@ -18,36 +17,28 @@ class Database:
         # context manager will automatically call conn.commit() when closed
         # TODO (jam) see if this will call commit
         with self.connection as conn:
-            cursor = conn.cursor()
-            cursor.execute(
+            cur = conn.cursor()
+            cur.execute(
                 """CREATE TABLE bills
                     (month TEXT,
                     category TEXT,
                     cost REAL,
                     paid INT);"""
             )
-            cursor.execute(
+            cur.execute(
                 """CREATE TABLE roommates
                     (month TEXT,
                     time_spent REAL,
                     name TEXT);"""
             )
         print(f"Utility database created at {self.location}.")
-
-    def add_roommate(self, month, time, name):
-        """add a roommate to the roommates table"""
-        with self.connection as conn:
-            cursor = conn.cursor()
-            cursor.execute(
-                "INSERT INTO roommates VALUES (?, ?, ?)", (month, time, name)
-            )
-        print(f"Added {name} for {time:0%} of {month}.")
+        return True
 
     def add_bill(self, month, category, cost, paid):
         """add a bill to the bills table"""
         with self.connection as conn:
-            cursor = conn.cursor()
-            cursor.execute(
+            cur = conn.cursor()
+            cur.execute(
                 "INSERT INTO bills VALUES (?, ?, ?, ?)",
                 (month, category, cost, paid),
             )
@@ -56,3 +47,24 @@ class Database:
         else:
             paid = "unpaid"
         print(f"Added {paid} {category} bill valuing {cost} to {month}.")
+
+    def add_roommate(self, month, time, name):
+        """add a roommate to the roommates table"""
+        with self.connection as conn:
+            cur = conn.cursor()
+            cur.execute("INSERT INTO roommates VALUES (?, ?, ?)", (month, time, name))
+        print(f"Added {name} for {time:0%} of {month}.")
+
+    def query_bills(self, month):
+        """query the bills for a month"""
+        with self.connection as conn:
+            cur = conn.cursor()
+            for row in cur.execute("SELECT * FROM bills WHERE month = '?'", (month)):
+                print(row)
+
+    def query_roommates(self, month):
+        """query the roommates for a month"""
+        with self.connection as conn:
+            cur = conn.cursor()
+            for row in cur.execute("SELECT * FROM roomates WHERE month = '?'", (month)):
+                print(row)

@@ -4,7 +4,8 @@
 *@neomake*.py$
 build/
 dist/
-*.pyc$
+poetry.lock
 utility_calculator.db
 utility_calculator.egg-info
 *__pycache__*
+*.pyc$

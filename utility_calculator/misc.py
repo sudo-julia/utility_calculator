@@ -1,16 +1,6 @@
 # -*- coding: utf-8 -*-
 """utilities that would clutter the main file"""
-import os
 import re
-from utility_calculator import db_path
-from utility_calculator.db_functions import create_database
-
-
-# TODO (jam) rename this file
-def check_db():
-    """create the database if it doesn't exist"""
-    if not os.path.exists(db_path):
-        create_database()
 
 
 def choose(prompt, options):
@@ -47,9 +37,9 @@ def get_float(prompt):
 
 def get_month():
     """ask the user for the month and ensure correct formatting"""
-    month_regex = re.compile(r"\d{4}-(0[1-9]|1[0-2])")
+    month_regex = re.compile(r"^(?:\d{4}-(?:0[1-9]|1[0-2]))$")
     while True:
-        month = input("Enter the month: ")
+        month = input("Enter the month: ").strip()
         if re.search(month_regex, month):
             return month
         print("Please enter month as 'YYYY-MM'")
