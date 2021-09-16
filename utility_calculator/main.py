@@ -1,7 +1,5 @@
 # -*- coding: utf-8 -*-
 """utility calculator"""
-from __future__ import annotations
-
 from utility_calculator import database
 import utility_calculator.misc as misc
 

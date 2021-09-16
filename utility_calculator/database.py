@@ -11,23 +11,7 @@ class Database:
     A class used to communicate with a sqlite3 database
 
     Attributes:
-        location: str
-            the location of the database
-
-    Methods:
-        create_database(self) -> bool
-            Creates the database at the location provided by self.location
-        add_bill(self, month: str, category: str, cost: float. paid: int)
-            Adds a bill to the bills table of the database
-        add_roommate(self, month: str, time: float, name: str)
-            Adds a roommate to the roommates table of the database
-        query_bills(self, month: str)
-            Queries the bills for a given month
-        query_roommates(self, month: str)
-            Queries the roommates for a given month
-        db_exists(self) -> bool:
-            Creates the database if it doesn't exist
-
+        location (str): the location of the database
     """
 
     def __init__(self, location: str):
@@ -50,7 +34,8 @@ class Database:
         """
         # TODO: error handling
         # create parent directory if it doesn't exist
-        if not (parent_dir := Path(self.location).parent).exists():
+        parent_dir = Path(self.location).parent
+        if not parent_dir.exists():
             parent_dir.mkdir()
         # context manager will automatically call conn.commit() when closed
         with sqlite3.connect(self.location) as conn:

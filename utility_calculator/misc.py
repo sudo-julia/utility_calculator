@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 """utilities that would clutter the main file"""
-from __future__ import annotations
 import re
 from typing import Pattern, Tuple
 
@@ -68,9 +67,6 @@ def get_float(prompt: str) -> float:
 
 def get_month() -> str:
     """Asks the user for the month and ensures correct formatting
-
-    Args:
-        None
 
     Returns:
         str: A month of a year, formatted as 'YYYY-MM'
