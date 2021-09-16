@@ -76,7 +76,7 @@ def user_data_dir(appname=None, appauthor=None, version=None, roaming=False):
         if appauthor is None:
             appauthor = appname
         const = "CSIDL_APPDATA" if roaming else "CSIDL_LOCAL_APPDATA"
-        path = os.path.normpath(_get_win_folder(const)) # type: ignore
+        path = os.path.normpath(_get_win_folder(const))  # type: ignore
         if appname:
             if appauthor is not False:
                 path = os.path.join(path, appauthor, appname)

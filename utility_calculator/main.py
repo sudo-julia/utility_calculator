@@ -1,17 +1,15 @@
 # -*- coding: utf-8 -*-
 """utility calculator"""
-from utility_calculator import db_path
-import utility_calculator.misc as misc
-from utility_calculator.database import Database
+from __future__ import annotations
 
-# TODO: (jam) option for user to specify location
-database = Database(db_path)
+from utility_calculator import database
+import utility_calculator.misc as misc
 
 
 def menu():
-    """run the menu"""
+    """Run the main menu"""
     print("\nSelect from the following menu options:")
-    selection = misc.choose(
+    selection: str = misc.choose(
         "1. Utility Calculator (u)\n2. New Roommate (n)\n3. Exit (e)\n> ",
         ("u", "n", "e"),
     )
@@ -23,25 +21,30 @@ def menu():
         raise SystemExit
 
 
-def utility_calc(quick=None):
-    """grab the cost of individual utilities and find the sum"""
-    # TODO: (jam) change this to read from database OR insert all values
-    water = misc.get_float("Enter the water bill: $")
-    gas = misc.get_float("Enter the gas bill: $")
-    internet = misc.get_float("Enter the internet bill: $")
-    electricity = misc.get_float("Enter the electrical bill: $")
+def utility_calc(quick: bool = False):
+    """Calculates the cost of utilties
 
-    total = water + gas + internet + electricity
+    Args:
+        quick (bool): Whether or not to run the 'quick' version of the script
+                      (defaults to False)
+    """
+    # TODO: (jam) change this to read from database OR insert all values
+    water: float = misc.get_float("Enter the water bill: $")
+    gas: float = misc.get_float("Enter the gas bill: $")
+    internet: float = misc.get_float("Enter the internet bill: $")
+    electricity: float = misc.get_float("Enter the electrical bill: $")
+
+    total: float = water + gas + internet + electricity
     print(f"Utility Total: ${total}")
 
     if quick:
-        num_roommates = int(misc.clean_input("Enter the number of roommates: "))
+        num_roommates: int = int(misc.clean_input("Enter the number of roommates: "))
         print(f"Each roommate pays {total / num_roommates:.2f}")
         raise SystemExit
 
     sum_utilities(total)
 
-    selection = misc.choose(
+    selection: str = misc.choose(
         "Would you like to return to the main menu (m) or exit the program (e)?\n> ",
         ("m", "e"),
     )
@@ -52,49 +55,58 @@ def utility_calc(quick=None):
         raise SystemExit
 
 
-def sum_utilities(total):
-    """perform the calculation of utilities"""
+def sum_utilities(total: float):
+    """Performs the calculation of utilities
+
+    Args:
+        total (float): The total of all utilities
+    """
     # TODO: (jam) overhaul, fetch data from database
     print(total)
     raise NotImplementedError
 
 
 def new_bill():
-    """add a bill to the database"""
+    """UI for adding a bill to the database"""
     # TODO: (jam) let the user manually input the type of bill
     #            once the database has entries, it can suggest from existing bill types
-    bills = ("water", "power", "gas", "internet")
+    bills: tuple = ("water", "power", "gas", "internet")
 
     while True:
-        month = misc.get_month()
-        category = misc.choose("Water, power, gas or internet bill? ", bills)
-        cost = misc.get_float(f"Enter the cost of the {category} bill: ")
-        paid = int(misc.confirm("Was the bill paid? [Y/n] "))
-        paid_str = "unpaid"
+        month: str = misc.get_month()
+        category: str = misc.choose("Water, power, gas or internet bill? ", bills)
+        cost: float = misc.get_float(f"Enter the cost of the {category} bill: ")
+        # this bool must be converted to an int, as sqlite3 doesn't have a bool type
+        paid: int = int(misc.confirm("Was the bill paid? [Y/n] "))
         if paid:
             paid_str = "paid"
+        else:
+            paid_str = "unpaid"
 
         print(f"The {category} bill for {month} cost {cost} and was {paid_str}.")
         if misc.confirm():
             break
+        print("Restarting selection process.")
 
-    database.add_bill(month, category, cost, paid)
+    if not database.add_bill(month, category, cost, paid):
+        print(f"Failed to add {category} bill to the database.")
 
 
 def new_person():
-    """add a new person to the list of roommates"""
+    """UI for adding a roommate to the database"""
     while True:
-        month = misc.get_month()
-        time_spent = float(
+        month: str = misc.get_month()
+        time_spent: float = float(
             misc.clean_input("Enter the percentage of time spent home: ").strip("%")
         )
-        name = misc.clean_input("Enter the person's name: ").title()
+        name: str = misc.clean_input("Enter the person's name: ").title()
 
         print(f"Month: {month}, Time spent at house: {time_spent}, Name: {name}")
         if misc.confirm():
             break
 
-    database.add_roommate(month, time_spent, name)
+    if not database.add_roommate(month, time_spent, name):
+        print(f"Failed to add {name} to the database.")
 
 
 # Total cost of utilties -> calculate kiln cost, subtract kiln cost

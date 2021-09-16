@@ -1,9 +1,9 @@
 [tool.poetry]
 name = "utility_calculator"
-version = "0.1.0"
-description = "a script to calculate utilities"
-authors = ["sudo-julia <jlearning@tuta.io>", "Julian E Andrews <juliane.andrews@gmail.com>"]
-license = "GPL-3.0"
+version = "0.2.0"
+description = "Calculate your utilties bill"
+authors = ["sudo-julia <jlearning at tuta dot io>", "Julian E Andrews <juliane.andrews@gmail.com>"]
+license = "MIT"
 
 [tool.poetry.dependencies]
 python = "^3.6"
