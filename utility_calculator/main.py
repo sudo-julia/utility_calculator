@@ -4,7 +4,7 @@ from utility_calculator import db_path
 import utility_calculator.misc as misc
 from utility_calculator.database import Database
 
-# TODO (jam) option for user to specify location
+# TODO: (jam) option for user to specify location
 database = Database(db_path)
 
 
@@ -25,7 +25,7 @@ def menu():
 
 def utility_calc(quick=None):
     """grab the cost of individual utilities and find the sum"""
-    # TODO (jam) change this to read from database OR insert all values
+    # TODO: (jam) change this to read from database OR insert all values
     water = misc.get_float("Enter the water bill: $")
     gas = misc.get_float("Enter the gas bill: $")
     internet = misc.get_float("Enter the internet bill: $")
@@ -54,16 +54,15 @@ def utility_calc(quick=None):
 
 def sum_utilities(total):
     """perform the calculation of utilities"""
-    # TODO (jam) overhaul, fetch data from database
+    # TODO: (jam) overhaul, fetch data from database
     print(total)
     raise NotImplementedError
 
 
 def new_bill():
     """add a bill to the database"""
-    # TODO (jam) let the user manually input the type of bill
+    # TODO: (jam) let the user manually input the type of bill
     #            once the database has entries, it can suggest from existing bill types
-    database.create_database()
     bills = ("water", "power", "gas", "internet")
 
     while True:
@@ -84,11 +83,8 @@ def new_bill():
 
 def new_person():
     """add a new person to the list of roommates"""
-    misc.check_db(database)
-
     while True:
         month = misc.get_month()
-        # TODO (jam) validate this
         time_spent = float(
             misc.clean_input("Enter the percentage of time spent home: ").strip("%")
         )
