@@ -45,11 +45,12 @@
                     <a class="function" href="#new_bill">new_bill</a>
             </li>
             <li>
-                    <a class="function" href="#new_person">new_person</a>
+                    <a class="function" href="#new_roommate">new_roommate</a>
             </li>
     </ul>
 
 
+                    <footer>Calculate your utilities bill with ease</footer>
 
                     <a class="attribution" title="pdoc: Python API documentation generator" href="https://pdoc.dev">
                         built with <span class="visually-hidden">pdoc</span><img
@@ -74,22 +75,30 @@ utility_calculator<wbr>.main    </h1>
 <span class="kn">import</span> <span class="nn">utility_calculator.misc</span> <span class="k">as</span> <span class="nn">misc</span>
 
 
-<span class="k">def</span> <span class="nf">menu</span><span class="p">():</span>
+<span class="k">def</span> <span class="nf">menu</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;Run the main menu&quot;&quot;&quot;</span>
     <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Select from the following menu options:&quot;</span><span class="p">)</span>
-    <span class="n">selection</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">misc</span><span class="o">.</span><span class="n">choose</span><span class="p">(</span>
-        <span class="s2">&quot;1. Utility Calculator (u)</span><span class="se">\n</span><span class="s2">2. New Roommate (n)</span><span class="se">\n</span><span class="s2">3. Exit (e)</span><span class="se">\n</span><span class="s2">&gt; &quot;</span><span class="p">,</span>
-        <span class="p">(</span><span class="s2">&quot;u&quot;</span><span class="p">,</span> <span class="s2">&quot;n&quot;</span><span class="p">,</span> <span class="s2">&quot;e&quot;</span><span class="p">),</span>
+    <span class="n">menu_str</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">    1. Utility Calculator (u)</span><span class="se">\n</span><span class="s2">2. New Roommate (r)</span><span class="se">\n</span><span class="s2">3. New Bill (b)</span><span class="se">\n</span><span class="s2">3. Exit (e)</span><span class="se">\n</span><span class="s2">&gt; </span>
+<span class="s2">    &quot;&quot;&quot;</span><span class="o">.</span><span class="n">strip</span><span class="p">(</span>
+        <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
     <span class="p">)</span>
-    <span class="k">if</span> <span class="n">selection</span> <span class="o">==</span> <span class="s2">&quot;u&quot;</span><span class="p">:</span>
-        <span class="n">utility_calc</span><span class="p">()</span>
-    <span class="k">elif</span> <span class="n">selection</span> <span class="o">==</span> <span class="s2">&quot;n&quot;</span><span class="p">:</span>
-        <span class="n">new_person</span><span class="p">()</span>
-    <span class="k">elif</span> <span class="n">selection</span> <span class="o">==</span> <span class="s2">&quot;e&quot;</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">SystemExit</span>
+    <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+        <span class="n">selection</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">misc</span><span class="o">.</span><span class="n">choose</span><span class="p">(</span>
+            <span class="n">menu_str</span><span class="p">,</span>
+            <span class="p">(</span><span class="s2">&quot;u&quot;</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">,</span> <span class="s2">&quot;b&quot;</span><span class="p">,</span> <span class="s2">&quot;e&quot;</span><span class="p">),</span>
+        <span class="p">)</span>
+        <span class="k">if</span> <span class="n">selection</span> <span class="o">==</span> <span class="s2">&quot;u&quot;</span><span class="p">:</span>
+            <span class="n">utility_calc</span><span class="p">()</span>
+        <span class="k">elif</span> <span class="n">selection</span> <span class="o">==</span> <span class="s2">&quot;r&quot;</span><span class="p">:</span>
+            <span class="n">new_roommate</span><span class="p">()</span>
+        <span class="k">elif</span> <span class="n">selection</span> <span class="o">==</span> <span class="s2">&quot;b&quot;</span><span class="p">:</span>
+            <span class="n">new_bill</span><span class="p">()</span>
+        <span class="k">elif</span> <span class="n">selection</span> <span class="o">==</span> <span class="s2">&quot;e&quot;</span><span class="p">:</span>
+            <span class="k">break</span>
 
 
-<span class="k">def</span> <span class="nf">utility_calc</span><span class="p">(</span><span class="n">quick</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">utility_calc</span><span class="p">(</span><span class="n">quick</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;Calculates the cost of utilties</span>
 
 <span class="sd">    Args:</span>
@@ -123,7 +132,7 @@ utility_calculator<wbr>.main    </h1>
         <span class="k">raise</span> <span class="ne">SystemExit</span>
 
 
-<span class="k">def</span> <span class="nf">sum_utilities</span><span class="p">(</span><span class="n">total</span><span class="p">:</span> <span class="nb">float</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">sum_utilities</span><span class="p">(</span><span class="n">total</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;Performs the calculation of utilities</span>
 
 <span class="sd">    Args:</span>
@@ -134,7 +143,8 @@ utility_calculator<wbr>.main    </h1>
     <span class="k">raise</span> <span class="ne">NotImplementedError</span>
 
 
-<span class="k">def</span> <span class="nf">new_bill</span><span class="p">():</span>
+<span class="c1"># TODO: for new_{bill,person} return True or False based off success</span>
+<span class="k">def</span> <span class="nf">new_bill</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;UI for adding a bill to the database&quot;&quot;&quot;</span>
     <span class="c1"># TODO: (jam) let the user manually input the type of bill</span>
     <span class="c1">#            once the database has entries, it can suggest from existing bill types</span>
@@ -157,10 +167,10 @@ utility_calculator<wbr>.main    </h1>
         <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Restarting selection process.&quot;</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="ow">not</span> <span class="n">database</span><span class="o">.</span><span class="n">add_bill</span><span class="p">(</span><span class="n">month</span><span class="p">,</span> <span class="n">category</span><span class="p">,</span> <span class="n">cost</span><span class="p">,</span> <span class="n">paid</span><span class="p">):</span>
-        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Failed to add </span><span class="si">{</span><span class="n">category</span><span class="si">}</span><span class="s2"> bill to the database.&quot;</span><span class="p">)</span>
+        <span class="n">misc</span><span class="o">.</span><span class="n">print_error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Failed to add </span><span class="si">{</span><span class="n">category</span><span class="si">}</span><span class="s2"> bill to the database.&quot;</span><span class="p">)</span>
 
 
-<span class="k">def</span> <span class="nf">new_person</span><span class="p">():</span>
+<span class="k">def</span> <span class="nf">new_roommate</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;UI for adding a roommate to the database&quot;&quot;&quot;</span>
     <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
         <span class="n">month</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">misc</span><span class="o">.</span><span class="n">get_month</span><span class="p">()</span>
@@ -174,7 +184,7 @@ utility_calculator<wbr>.main    </h1>
             <span class="k">break</span>
 
     <span class="k">if</span> <span class="ow">not</span> <span class="n">database</span><span class="o">.</span><span class="n">add_roommate</span><span class="p">(</span><span class="n">month</span><span class="p">,</span> <span class="n">time_spent</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
-        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Failed to add </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2"> to the database.&quot;</span><span class="p">)</span>
+        <span class="n">misc</span><span class="o">.</span><span class="n">print_error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Failed to add </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2"> to the database.&quot;</span><span class="p">)</span>
 
 
 <span class="c1"># Total cost of utilties -&gt; calculate kiln cost, subtract kiln cost</span>
@@ -194,24 +204,32 @@ utility_calculator<wbr>.main    </h1>
 
 
             <span class="def">def</span>
-            <span class="name">menu</span><span class="signature">()</span>:
+            <span class="name">menu</span><span class="signature">() -&gt; None</span>:
     </div>
 
                 <details>
             <summary>View Source</summary>
-            <div class="codehilite"><pre><span></span><span class="k">def</span> <span class="nf">menu</span><span class="p">():</span>
+            <div class="codehilite"><pre><span></span><span class="k">def</span> <span class="nf">menu</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;Run the main menu&quot;&quot;&quot;</span>
     <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Select from the following menu options:&quot;</span><span class="p">)</span>
-    <span class="n">selection</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">misc</span><span class="o">.</span><span class="n">choose</span><span class="p">(</span>
-        <span class="s2">&quot;1. Utility Calculator (u)</span><span class="se">\n</span><span class="s2">2. New Roommate (n)</span><span class="se">\n</span><span class="s2">3. Exit (e)</span><span class="se">\n</span><span class="s2">&gt; &quot;</span><span class="p">,</span>
-        <span class="p">(</span><span class="s2">&quot;u&quot;</span><span class="p">,</span> <span class="s2">&quot;n&quot;</span><span class="p">,</span> <span class="s2">&quot;e&quot;</span><span class="p">),</span>
+    <span class="n">menu_str</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">    1. Utility Calculator (u)</span><span class="se">\n</span><span class="s2">2. New Roommate (r)</span><span class="se">\n</span><span class="s2">3. New Bill (b)</span><span class="se">\n</span><span class="s2">3. Exit (e)</span><span class="se">\n</span><span class="s2">&gt; </span>
+<span class="s2">    &quot;&quot;&quot;</span><span class="o">.</span><span class="n">strip</span><span class="p">(</span>
+        <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
     <span class="p">)</span>
-    <span class="k">if</span> <span class="n">selection</span> <span class="o">==</span> <span class="s2">&quot;u&quot;</span><span class="p">:</span>
-        <span class="n">utility_calc</span><span class="p">()</span>
-    <span class="k">elif</span> <span class="n">selection</span> <span class="o">==</span> <span class="s2">&quot;n&quot;</span><span class="p">:</span>
-        <span class="n">new_person</span><span class="p">()</span>
-    <span class="k">elif</span> <span class="n">selection</span> <span class="o">==</span> <span class="s2">&quot;e&quot;</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">SystemExit</span>
+    <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+        <span class="n">selection</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">misc</span><span class="o">.</span><span class="n">choose</span><span class="p">(</span>
+            <span class="n">menu_str</span><span class="p">,</span>
+            <span class="p">(</span><span class="s2">&quot;u&quot;</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">,</span> <span class="s2">&quot;b&quot;</span><span class="p">,</span> <span class="s2">&quot;e&quot;</span><span class="p">),</span>
+        <span class="p">)</span>
+        <span class="k">if</span> <span class="n">selection</span> <span class="o">==</span> <span class="s2">&quot;u&quot;</span><span class="p">:</span>
+            <span class="n">utility_calc</span><span class="p">()</span>
+        <span class="k">elif</span> <span class="n">selection</span> <span class="o">==</span> <span class="s2">&quot;r&quot;</span><span class="p">:</span>
+            <span class="n">new_roommate</span><span class="p">()</span>
+        <span class="k">elif</span> <span class="n">selection</span> <span class="o">==</span> <span class="s2">&quot;b&quot;</span><span class="p">:</span>
+            <span class="n">new_bill</span><span class="p">()</span>
+        <span class="k">elif</span> <span class="n">selection</span> <span class="o">==</span> <span class="s2">&quot;e&quot;</span><span class="p">:</span>
+            <span class="k">break</span>
 </pre></div>
 
         </details>
@@ -226,12 +244,12 @@ utility_calculator<wbr>.main    </h1>
 
 
             <span class="def">def</span>
-            <span class="name">utility_calc</span><span class="signature">(quick: bool = False)</span>:
+            <span class="name">utility_calc</span><span class="signature">(quick: bool = False) -&gt; None</span>:
     </div>
 
                 <details>
             <summary>View Source</summary>
-            <div class="codehilite"><pre><span></span><span class="k">def</span> <span class="nf">utility_calc</span><span class="p">(</span><span class="n">quick</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>
+            <div class="codehilite"><pre><span></span><span class="k">def</span> <span class="nf">utility_calc</span><span class="p">(</span><span class="n">quick</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;Calculates the cost of utilties</span>
 
 <span class="sd">    Args:</span>
@@ -284,12 +302,12 @@ utility_calculator<wbr>.main    </h1>
 
 
             <span class="def">def</span>
-            <span class="name">sum_utilities</span><span class="signature">(total: float)</span>:
+            <span class="name">sum_utilities</span><span class="signature">(total: float) -&gt; None</span>:
     </div>
 
                 <details>
             <summary>View Source</summary>
-            <div class="codehilite"><pre><span></span><span class="k">def</span> <span class="nf">sum_utilities</span><span class="p">(</span><span class="n">total</span><span class="p">:</span> <span class="nb">float</span><span class="p">):</span>
+            <div class="codehilite"><pre><span></span><span class="k">def</span> <span class="nf">sum_utilities</span><span class="p">(</span><span class="n">total</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;Performs the calculation of utilities</span>
 
 <span class="sd">    Args:</span>
@@ -318,12 +336,12 @@ utility_calculator<wbr>.main    </h1>
 
 
             <span class="def">def</span>
-            <span class="name">new_bill</span><span class="signature">()</span>:
+            <span class="name">new_bill</span><span class="signature">() -&gt; None</span>:
     </div>
 
                 <details>
             <summary>View Source</summary>
-            <div class="codehilite"><pre><span></span><span class="k">def</span> <span class="nf">new_bill</span><span class="p">():</span>
+            <div class="codehilite"><pre><span></span><span class="k">def</span> <span class="nf">new_bill</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;UI for adding a bill to the database&quot;&quot;&quot;</span>
     <span class="c1"># TODO: (jam) let the user manually input the type of bill</span>
     <span class="c1">#            once the database has entries, it can suggest from existing bill types</span>
@@ -346,7 +364,7 @@ utility_calculator<wbr>.main    </h1>
         <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Restarting selection process.&quot;</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="ow">not</span> <span class="n">database</span><span class="o">.</span><span class="n">add_bill</span><span class="p">(</span><span class="n">month</span><span class="p">,</span> <span class="n">category</span><span class="p">,</span> <span class="n">cost</span><span class="p">,</span> <span class="n">paid</span><span class="p">):</span>
-        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Failed to add </span><span class="si">{</span><span class="n">category</span><span class="si">}</span><span class="s2"> bill to the database.&quot;</span><span class="p">)</span>
+        <span class="n">misc</span><span class="o">.</span><span class="n">print_error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Failed to add </span><span class="si">{</span><span class="n">category</span><span class="si">}</span><span class="s2"> bill to the database.&quot;</span><span class="p">)</span>
 </pre></div>
 
         </details>
@@ -356,17 +374,17 @@ utility_calculator<wbr>.main    </h1>
 
 
                 </section>
-                <section id="new_person">
-                            <div class="attr function"><a class="headerlink" href="#new_person">#&nbsp;&nbsp</a>
+                <section id="new_roommate">
+                            <div class="attr function"><a class="headerlink" href="#new_roommate">#&nbsp;&nbsp</a>
 
 
             <span class="def">def</span>
-            <span class="name">new_person</span><span class="signature">()</span>:
+            <span class="name">new_roommate</span><span class="signature">() -&gt; None</span>:
     </div>
 
                 <details>
             <summary>View Source</summary>
-            <div class="codehilite"><pre><span></span><span class="k">def</span> <span class="nf">new_person</span><span class="p">():</span>
+            <div class="codehilite"><pre><span></span><span class="k">def</span> <span class="nf">new_roommate</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;UI for adding a roommate to the database&quot;&quot;&quot;</span>
     <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
         <span class="n">month</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">misc</span><span class="o">.</span><span class="n">get_month</span><span class="p">()</span>
@@ -380,7 +398,7 @@ utility_calculator<wbr>.main    </h1>
             <span class="k">break</span>
 
     <span class="k">if</span> <span class="ow">not</span> <span class="n">database</span><span class="o">.</span><span class="n">add_roommate</span><span class="p">(</span><span class="n">month</span><span class="p">,</span> <span class="n">time_spent</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
-        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Failed to add </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2"> to the database.&quot;</span><span class="p">)</span>
+        <span class="n">misc</span><span class="o">.</span><span class="n">print_error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Failed to add </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2"> to the database.&quot;</span><span class="p">)</span>
 </pre></div>
 
         </details>

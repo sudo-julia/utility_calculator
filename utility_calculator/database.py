@@ -1,11 +1,11 @@
 # -*- coding: utf-8 -*-
 """database operations for utility_calculator"""
-import os
 from pathlib import Path
 import sqlite3
 
+from utility_calculator.misc import print_error
 
-# TODO: (jam) document
+
 class Database:
     """
     A class used to communicate with a sqlite3 database
@@ -14,16 +14,16 @@ class Database:
         location (str): the location of the database
     """
 
-    def __init__(self, location: str):
+    def __init__(self, location: str) -> None:
         """Initialize attributes for the Database class
 
         Args:
             location (str): The location of the database
         """
         self.location = location
-        # TODO: should this be one method?
-        if not self.db_exists():
-            self.create_database()
+        if not self.create_database():
+            print_error("Error creating database! Cancelling...")
+            raise SystemExit(1)
         self.connection: sqlite3.Connection = sqlite3.connect(self.location)
 
     def create_database(self) -> bool:
@@ -32,28 +32,34 @@ class Database:
         Returns:
             bool: True if the database was created, False on a failure
         """
-        # TODO: error handling
         # create parent directory if it doesn't exist
-        parent_dir = Path(self.location).parent
-        if not parent_dir.exists():
-            parent_dir.mkdir()
+        try:
+            parent_dir = Path(self.location).parent
+            if not parent_dir.exists():
+                parent_dir.mkdir()
+        except PermissionError as err:
+            print_error(err)
+            return False
         # context manager will automatically call conn.commit() when closed
-        with sqlite3.connect(self.location) as conn:
-            cur = conn.cursor()
-            cur.execute(
-                """CREATE TABLE IF NOT EXISTS bills
-                    (month TEXT,
-                    category TEXT,
-                    cost REAL,
-                    paid INT);"""
-            )
-            cur.execute(
-                """CREATE TABLE IF NOT EXISTS roommates
-                    (month TEXT,
-                    time_spent REAL,
-                    name TEXT);"""
-            )
-        print(f"Utility database created at '{self.location}'")
+        try:
+            with sqlite3.connect(self.location) as conn:
+                cur = conn.cursor()
+                cur.execute(
+                    """CREATE TABLE IF NOT EXISTS bills
+                        (month TEXT,
+                        category TEXT,
+                        cost REAL,
+                        paid INT);"""
+                )
+                cur.execute(
+                    """CREATE TABLE IF NOT EXISTS roommates
+                        (month TEXT,
+                        time_spent REAL,
+                        name TEXT);"""
+                )
+        except sqlite3.Error as err:
+            print_error(err)
+            return False
         return True
 
     def add_bill(self, month: str, category: str, cost: float, paid: int) -> bool:
@@ -69,8 +75,6 @@ class Database:
             bool: True if the operation was successful, False upon failure
         """
         # TODO: check for existing bills/give option to overwrite
-        if not self.db_exists():
-            self.create_database()
         with self.connection as conn:
             cur = conn.cursor()
             cur.execute(
@@ -96,16 +100,14 @@ class Database:
         Returns:
             bool: True if the operation was successful, False upon failure
         """
-        if not self.db_exists():
-            self.create_database()
         with self.connection as conn:
             cur = conn.cursor()
             cur.execute("INSERT INTO roommates VALUES (?, ?, ?)", (month, time, name))
 
-        print(f"Added {name} for {time:0%} of {month}.")
+        print(f"Added {name} for {time:1.0%} of {month}.")
         return True
 
-    def query_bills(self, month: str):
+    def query_bills(self, month: str) -> None:
         """Queries the bills for a given month
 
         Args:
@@ -117,7 +119,7 @@ class Database:
             for row in cur.execute("SELECT * FROM bills WHERE month = '?'", (month)):
                 print(row)
 
-    def query_roommates(self, month: str):
+    def query_roommates(self, month: str) -> None:
         """Queries the roommates for a given month
 
         Args:
@@ -128,13 +130,3 @@ class Database:
             cur = conn.cursor()
             for row in cur.execute("SELECT * FROM roomates WHERE month = '?'", (month)):
                 print(row)
-
-    def db_exists(self) -> bool:
-        """Creates the database if it doesn't exist
-
-        Returns:
-            bool: True if the database exists, False if it doesn't
-        """
-        if not os.path.exists(self.location):
-            return False
-        return True

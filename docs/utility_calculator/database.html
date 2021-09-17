@@ -53,15 +53,13 @@
                         <li>
                                 <a class="function" href="#Database.query_roommates">query_roommates</a>
                         </li>
-                        <li>
-                                <a class="function" href="#Database.db_exists">db_exists</a>
-                        </li>
                 </ul>
 
             </li>
     </ul>
 
 
+                    <footer>Calculate your utilities bill with ease</footer>
 
                     <a class="attribution" title="pdoc: Python API documentation generator" href="https://pdoc.dev">
                         built with <span class="visually-hidden">pdoc</span><img
@@ -82,12 +80,12 @@ utility_calculator<wbr>.database    </h1>
             <summary>View Source</summary>
             <div class="codehilite"><pre><span></span><span class="c1"># -*- coding: utf-8 -*-</span>
 <span class="sd">&quot;&quot;&quot;database operations for utility_calculator&quot;&quot;&quot;</span>
-<span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
 <span class="kn">import</span> <span class="nn">sqlite3</span>
 
+<span class="kn">from</span> <span class="nn">utility_calculator.misc</span> <span class="kn">import</span> <span class="n">print_error</span>
 
-<span class="c1"># TODO: (jam) document</span>
+
 <span class="k">class</span> <span class="nc">Database</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A class used to communicate with a sqlite3 database</span>
@@ -96,16 +94,16 @@ utility_calculator<wbr>.database    </h1>
 <span class="sd">        location (str): the location of the database</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">location</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">location</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;Initialize attributes for the Database class</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            location (str): The location of the database</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">location</span> <span class="o">=</span> <span class="n">location</span>
-        <span class="c1"># TODO: should this be one method?</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">db_exists</span><span class="p">():</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">create_database</span><span class="p">()</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">create_database</span><span class="p">():</span>
+            <span class="n">print_error</span><span class="p">(</span><span class="s2">&quot;Error creating database! Cancelling...&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">SystemExit</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">connection</span><span class="p">:</span> <span class="n">sqlite3</span><span class="o">.</span><span class="n">Connection</span> <span class="o">=</span> <span class="n">sqlite3</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">location</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">create_database</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
@@ -114,28 +112,34 @@ utility_calculator<wbr>.database    </h1>
 <span class="sd">        Returns:</span>
 <span class="sd">            bool: True if the database was created, False on a failure</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="c1"># TODO: error handling</span>
         <span class="c1"># create parent directory if it doesn&#39;t exist</span>
-        <span class="n">parent_dir</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">location</span><span class="p">)</span><span class="o">.</span><span class="n">parent</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">parent_dir</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
-            <span class="n">parent_dir</span><span class="o">.</span><span class="n">mkdir</span><span class="p">()</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">parent_dir</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">location</span><span class="p">)</span><span class="o">.</span><span class="n">parent</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">parent_dir</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
+                <span class="n">parent_dir</span><span class="o">.</span><span class="n">mkdir</span><span class="p">()</span>
+        <span class="k">except</span> <span class="ne">PermissionError</span> <span class="k">as</span> <span class="n">err</span><span class="p">:</span>
+            <span class="n">print_error</span><span class="p">(</span><span class="n">err</span><span class="p">)</span>
+            <span class="k">return</span> <span class="kc">False</span>
         <span class="c1"># context manager will automatically call conn.commit() when closed</span>
-        <span class="k">with</span> <span class="n">sqlite3</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">location</span><span class="p">)</span> <span class="k">as</span> <span class="n">conn</span><span class="p">:</span>
-            <span class="n">cur</span> <span class="o">=</span> <span class="n">conn</span><span class="o">.</span><span class="n">cursor</span><span class="p">()</span>
-            <span class="n">cur</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span>
-                <span class="sd">&quot;&quot;&quot;CREATE TABLE IF NOT EXISTS bills</span>
-<span class="sd">                    (month TEXT,</span>
-<span class="sd">                    category TEXT,</span>
-<span class="sd">                    cost REAL,</span>
-<span class="sd">                    paid INT);&quot;&quot;&quot;</span>
-            <span class="p">)</span>
-            <span class="n">cur</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span>
-                <span class="sd">&quot;&quot;&quot;CREATE TABLE IF NOT EXISTS roommates</span>
-<span class="sd">                    (month TEXT,</span>
-<span class="sd">                    time_spent REAL,</span>
-<span class="sd">                    name TEXT);&quot;&quot;&quot;</span>
-            <span class="p">)</span>
-        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Utility database created at &#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">location</span><span class="si">}</span><span class="s2">&#39;&quot;</span><span class="p">)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">with</span> <span class="n">sqlite3</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">location</span><span class="p">)</span> <span class="k">as</span> <span class="n">conn</span><span class="p">:</span>
+                <span class="n">cur</span> <span class="o">=</span> <span class="n">conn</span><span class="o">.</span><span class="n">cursor</span><span class="p">()</span>
+                <span class="n">cur</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span>
+                    <span class="sd">&quot;&quot;&quot;CREATE TABLE IF NOT EXISTS bills</span>
+<span class="sd">                        (month TEXT,</span>
+<span class="sd">                        category TEXT,</span>
+<span class="sd">                        cost REAL,</span>
+<span class="sd">                        paid INT);&quot;&quot;&quot;</span>
+                <span class="p">)</span>
+                <span class="n">cur</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span>
+                    <span class="sd">&quot;&quot;&quot;CREATE TABLE IF NOT EXISTS roommates</span>
+<span class="sd">                        (month TEXT,</span>
+<span class="sd">                        time_spent REAL,</span>
+<span class="sd">                        name TEXT);&quot;&quot;&quot;</span>
+                <span class="p">)</span>
+        <span class="k">except</span> <span class="n">sqlite3</span><span class="o">.</span><span class="n">Error</span> <span class="k">as</span> <span class="n">err</span><span class="p">:</span>
+            <span class="n">print_error</span><span class="p">(</span><span class="n">err</span><span class="p">)</span>
+            <span class="k">return</span> <span class="kc">False</span>
         <span class="k">return</span> <span class="kc">True</span>
 
     <span class="k">def</span> <span class="nf">add_bill</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">month</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">category</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">cost</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">paid</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
@@ -151,8 +155,6 @@ utility_calculator<wbr>.database    </h1>
 <span class="sd">            bool: True if the operation was successful, False upon failure</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># TODO: check for existing bills/give option to overwrite</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">db_exists</span><span class="p">():</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">create_database</span><span class="p">()</span>
         <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">connection</span> <span class="k">as</span> <span class="n">conn</span><span class="p">:</span>
             <span class="n">cur</span> <span class="o">=</span> <span class="n">conn</span><span class="o">.</span><span class="n">cursor</span><span class="p">()</span>
             <span class="n">cur</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span>
@@ -178,16 +180,14 @@ utility_calculator<wbr>.database    </h1>
 <span class="sd">        Returns:</span>
 <span class="sd">            bool: True if the operation was successful, False upon failure</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">db_exists</span><span class="p">():</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">create_database</span><span class="p">()</span>
         <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">connection</span> <span class="k">as</span> <span class="n">conn</span><span class="p">:</span>
             <span class="n">cur</span> <span class="o">=</span> <span class="n">conn</span><span class="o">.</span><span class="n">cursor</span><span class="p">()</span>
             <span class="n">cur</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s2">&quot;INSERT INTO roommates VALUES (?, ?, ?)&quot;</span><span class="p">,</span> <span class="p">(</span><span class="n">month</span><span class="p">,</span> <span class="n">time</span><span class="p">,</span> <span class="n">name</span><span class="p">))</span>
 
-        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Added </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2"> for </span><span class="si">{</span><span class="n">time</span><span class="si">:</span><span class="s2">0%</span><span class="si">}</span><span class="s2"> of </span><span class="si">{</span><span class="n">month</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Added </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2"> for </span><span class="si">{</span><span class="n">time</span><span class="si">:</span><span class="s2">1.0%</span><span class="si">}</span><span class="s2"> of </span><span class="si">{</span><span class="n">month</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
         <span class="k">return</span> <span class="kc">True</span>
 
-    <span class="k">def</span> <span class="nf">query_bills</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">month</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">query_bills</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">month</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;Queries the bills for a given month</span>
 
 <span class="sd">        Args:</span>
@@ -199,7 +199,7 @@ utility_calculator<wbr>.database    </h1>
             <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">cur</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s2">&quot;SELECT * FROM bills WHERE month = &#39;?&#39;&quot;</span><span class="p">,</span> <span class="p">(</span><span class="n">month</span><span class="p">)):</span>
                 <span class="nb">print</span><span class="p">(</span><span class="n">row</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">query_roommates</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">month</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">query_roommates</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">month</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;Queries the roommates for a given month</span>
 
 <span class="sd">        Args:</span>
@@ -210,16 +210,6 @@ utility_calculator<wbr>.database    </h1>
             <span class="n">cur</span> <span class="o">=</span> <span class="n">conn</span><span class="o">.</span><span class="n">cursor</span><span class="p">()</span>
             <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">cur</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s2">&quot;SELECT * FROM roomates WHERE month = &#39;?&#39;&quot;</span><span class="p">,</span> <span class="p">(</span><span class="n">month</span><span class="p">)):</span>
                 <span class="nb">print</span><span class="p">(</span><span class="n">row</span><span class="p">)</span>
-
-    <span class="k">def</span> <span class="nf">db_exists</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Creates the database if it doesn&#39;t exist</span>
-
-<span class="sd">        Returns:</span>
-<span class="sd">            bool: True if the database exists, False if it doesn&#39;t</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">location</span><span class="p">):</span>
-            <span class="k">return</span> <span class="kc">False</span>
-        <span class="k">return</span> <span class="kc">True</span>
 </pre></div>
 
         </details>
@@ -244,16 +234,16 @@ utility_calculator<wbr>.database    </h1>
 <span class="sd">        location (str): the location of the database</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">location</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">location</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;Initialize attributes for the Database class</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            location (str): The location of the database</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">location</span> <span class="o">=</span> <span class="n">location</span>
-        <span class="c1"># TODO: should this be one method?</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">db_exists</span><span class="p">():</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">create_database</span><span class="p">()</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">create_database</span><span class="p">():</span>
+            <span class="n">print_error</span><span class="p">(</span><span class="s2">&quot;Error creating database! Cancelling...&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">SystemExit</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">connection</span><span class="p">:</span> <span class="n">sqlite3</span><span class="o">.</span><span class="n">Connection</span> <span class="o">=</span> <span class="n">sqlite3</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">location</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">create_database</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
@@ -262,28 +252,34 @@ utility_calculator<wbr>.database    </h1>
 <span class="sd">        Returns:</span>
 <span class="sd">            bool: True if the database was created, False on a failure</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="c1"># TODO: error handling</span>
         <span class="c1"># create parent directory if it doesn&#39;t exist</span>
-        <span class="n">parent_dir</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">location</span><span class="p">)</span><span class="o">.</span><span class="n">parent</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">parent_dir</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
-            <span class="n">parent_dir</span><span class="o">.</span><span class="n">mkdir</span><span class="p">()</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">parent_dir</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">location</span><span class="p">)</span><span class="o">.</span><span class="n">parent</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">parent_dir</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
+                <span class="n">parent_dir</span><span class="o">.</span><span class="n">mkdir</span><span class="p">()</span>
+        <span class="k">except</span> <span class="ne">PermissionError</span> <span class="k">as</span> <span class="n">err</span><span class="p">:</span>
+            <span class="n">print_error</span><span class="p">(</span><span class="n">err</span><span class="p">)</span>
+            <span class="k">return</span> <span class="kc">False</span>
         <span class="c1"># context manager will automatically call conn.commit() when closed</span>
-        <span class="k">with</span> <span class="n">sqlite3</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">location</span><span class="p">)</span> <span class="k">as</span> <span class="n">conn</span><span class="p">:</span>
-            <span class="n">cur</span> <span class="o">=</span> <span class="n">conn</span><span class="o">.</span><span class="n">cursor</span><span class="p">()</span>
-            <span class="n">cur</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span>
-                <span class="sd">&quot;&quot;&quot;CREATE TABLE IF NOT EXISTS bills</span>
-<span class="sd">                    (month TEXT,</span>
-<span class="sd">                    category TEXT,</span>
-<span class="sd">                    cost REAL,</span>
-<span class="sd">                    paid INT);&quot;&quot;&quot;</span>
-            <span class="p">)</span>
-            <span class="n">cur</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span>
-                <span class="sd">&quot;&quot;&quot;CREATE TABLE IF NOT EXISTS roommates</span>
-<span class="sd">                    (month TEXT,</span>
-<span class="sd">                    time_spent REAL,</span>
-<span class="sd">                    name TEXT);&quot;&quot;&quot;</span>
-            <span class="p">)</span>
-        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Utility database created at &#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">location</span><span class="si">}</span><span class="s2">&#39;&quot;</span><span class="p">)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">with</span> <span class="n">sqlite3</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">location</span><span class="p">)</span> <span class="k">as</span> <span class="n">conn</span><span class="p">:</span>
+                <span class="n">cur</span> <span class="o">=</span> <span class="n">conn</span><span class="o">.</span><span class="n">cursor</span><span class="p">()</span>
+                <span class="n">cur</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span>
+                    <span class="sd">&quot;&quot;&quot;CREATE TABLE IF NOT EXISTS bills</span>
+<span class="sd">                        (month TEXT,</span>
+<span class="sd">                        category TEXT,</span>
+<span class="sd">                        cost REAL,</span>
+<span class="sd">                        paid INT);&quot;&quot;&quot;</span>
+                <span class="p">)</span>
+                <span class="n">cur</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span>
+                    <span class="sd">&quot;&quot;&quot;CREATE TABLE IF NOT EXISTS roommates</span>
+<span class="sd">                        (month TEXT,</span>
+<span class="sd">                        time_spent REAL,</span>
+<span class="sd">                        name TEXT);&quot;&quot;&quot;</span>
+                <span class="p">)</span>
+        <span class="k">except</span> <span class="n">sqlite3</span><span class="o">.</span><span class="n">Error</span> <span class="k">as</span> <span class="n">err</span><span class="p">:</span>
+            <span class="n">print_error</span><span class="p">(</span><span class="n">err</span><span class="p">)</span>
+            <span class="k">return</span> <span class="kc">False</span>
         <span class="k">return</span> <span class="kc">True</span>
 
     <span class="k">def</span> <span class="nf">add_bill</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">month</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">category</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">cost</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">paid</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
@@ -299,8 +295,6 @@ utility_calculator<wbr>.database    </h1>
 <span class="sd">            bool: True if the operation was successful, False upon failure</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># TODO: check for existing bills/give option to overwrite</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">db_exists</span><span class="p">():</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">create_database</span><span class="p">()</span>
         <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">connection</span> <span class="k">as</span> <span class="n">conn</span><span class="p">:</span>
             <span class="n">cur</span> <span class="o">=</span> <span class="n">conn</span><span class="o">.</span><span class="n">cursor</span><span class="p">()</span>
             <span class="n">cur</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span>
@@ -326,16 +320,14 @@ utility_calculator<wbr>.database    </h1>
 <span class="sd">        Returns:</span>
 <span class="sd">            bool: True if the operation was successful, False upon failure</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">db_exists</span><span class="p">():</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">create_database</span><span class="p">()</span>
         <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">connection</span> <span class="k">as</span> <span class="n">conn</span><span class="p">:</span>
             <span class="n">cur</span> <span class="o">=</span> <span class="n">conn</span><span class="o">.</span><span class="n">cursor</span><span class="p">()</span>
             <span class="n">cur</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s2">&quot;INSERT INTO roommates VALUES (?, ?, ?)&quot;</span><span class="p">,</span> <span class="p">(</span><span class="n">month</span><span class="p">,</span> <span class="n">time</span><span class="p">,</span> <span class="n">name</span><span class="p">))</span>
 
-        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Added </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2"> for </span><span class="si">{</span><span class="n">time</span><span class="si">:</span><span class="s2">0%</span><span class="si">}</span><span class="s2"> of </span><span class="si">{</span><span class="n">month</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Added </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2"> for </span><span class="si">{</span><span class="n">time</span><span class="si">:</span><span class="s2">1.0%</span><span class="si">}</span><span class="s2"> of </span><span class="si">{</span><span class="n">month</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
         <span class="k">return</span> <span class="kc">True</span>
 
-    <span class="k">def</span> <span class="nf">query_bills</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">month</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">query_bills</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">month</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;Queries the bills for a given month</span>
 
 <span class="sd">        Args:</span>
@@ -347,7 +339,7 @@ utility_calculator<wbr>.database    </h1>
             <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">cur</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s2">&quot;SELECT * FROM bills WHERE month = &#39;?&#39;&quot;</span><span class="p">,</span> <span class="p">(</span><span class="n">month</span><span class="p">)):</span>
                 <span class="nb">print</span><span class="p">(</span><span class="n">row</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">query_roommates</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">month</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">query_roommates</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">month</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;Queries the roommates for a given month</span>
 
 <span class="sd">        Args:</span>
@@ -358,16 +350,6 @@ utility_calculator<wbr>.database    </h1>
             <span class="n">cur</span> <span class="o">=</span> <span class="n">conn</span><span class="o">.</span><span class="n">cursor</span><span class="p">()</span>
             <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">cur</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s2">&quot;SELECT * FROM roomates WHERE month = &#39;?&#39;&quot;</span><span class="p">,</span> <span class="p">(</span><span class="n">month</span><span class="p">)):</span>
                 <span class="nb">print</span><span class="p">(</span><span class="n">row</span><span class="p">)</span>
-
-    <span class="k">def</span> <span class="nf">db_exists</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Creates the database if it doesn&#39;t exist</span>
-
-<span class="sd">        Returns:</span>
-<span class="sd">            bool: True if the database exists, False if it doesn&#39;t</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">location</span><span class="p">):</span>
-            <span class="k">return</span> <span class="kc">False</span>
-        <span class="k">return</span> <span class="kc">True</span>
 </pre></div>
 
         </details>
@@ -391,16 +373,16 @@ utility_calculator<wbr>.database    </h1>
 
                 <details>
             <summary>View Source</summary>
-            <div class="codehilite"><pre><span></span>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">location</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+            <div class="codehilite"><pre><span></span>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">location</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;Initialize attributes for the Database class</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            location (str): The location of the database</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">location</span> <span class="o">=</span> <span class="n">location</span>
-        <span class="c1"># TODO: should this be one method?</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">db_exists</span><span class="p">():</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">create_database</span><span class="p">()</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">create_database</span><span class="p">():</span>
+            <span class="n">print_error</span><span class="p">(</span><span class="s2">&quot;Error creating database! Cancelling...&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">SystemExit</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">connection</span><span class="p">:</span> <span class="n">sqlite3</span><span class="o">.</span><span class="n">Connection</span> <span class="o">=</span> <span class="n">sqlite3</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">location</span><span class="p">)</span>
 </pre></div>
 
@@ -433,28 +415,34 @@ utility_calculator<wbr>.database    </h1>
 <span class="sd">        Returns:</span>
 <span class="sd">            bool: True if the database was created, False on a failure</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="c1"># TODO: error handling</span>
         <span class="c1"># create parent directory if it doesn&#39;t exist</span>
-        <span class="n">parent_dir</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">location</span><span class="p">)</span><span class="o">.</span><span class="n">parent</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">parent_dir</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
-            <span class="n">parent_dir</span><span class="o">.</span><span class="n">mkdir</span><span class="p">()</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">parent_dir</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">location</span><span class="p">)</span><span class="o">.</span><span class="n">parent</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">parent_dir</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
+                <span class="n">parent_dir</span><span class="o">.</span><span class="n">mkdir</span><span class="p">()</span>
+        <span class="k">except</span> <span class="ne">PermissionError</span> <span class="k">as</span> <span class="n">err</span><span class="p">:</span>
+            <span class="n">print_error</span><span class="p">(</span><span class="n">err</span><span class="p">)</span>
+            <span class="k">return</span> <span class="kc">False</span>
         <span class="c1"># context manager will automatically call conn.commit() when closed</span>
-        <span class="k">with</span> <span class="n">sqlite3</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">location</span><span class="p">)</span> <span class="k">as</span> <span class="n">conn</span><span class="p">:</span>
-            <span class="n">cur</span> <span class="o">=</span> <span class="n">conn</span><span class="o">.</span><span class="n">cursor</span><span class="p">()</span>
-            <span class="n">cur</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span>
-                <span class="sd">&quot;&quot;&quot;CREATE TABLE IF NOT EXISTS bills</span>
-<span class="sd">                    (month TEXT,</span>
-<span class="sd">                    category TEXT,</span>
-<span class="sd">                    cost REAL,</span>
-<span class="sd">                    paid INT);&quot;&quot;&quot;</span>
-            <span class="p">)</span>
-            <span class="n">cur</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span>
-                <span class="sd">&quot;&quot;&quot;CREATE TABLE IF NOT EXISTS roommates</span>
-<span class="sd">                    (month TEXT,</span>
-<span class="sd">                    time_spent REAL,</span>
-<span class="sd">                    name TEXT);&quot;&quot;&quot;</span>
-            <span class="p">)</span>
-        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Utility database created at &#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">location</span><span class="si">}</span><span class="s2">&#39;&quot;</span><span class="p">)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">with</span> <span class="n">sqlite3</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">location</span><span class="p">)</span> <span class="k">as</span> <span class="n">conn</span><span class="p">:</span>
+                <span class="n">cur</span> <span class="o">=</span> <span class="n">conn</span><span class="o">.</span><span class="n">cursor</span><span class="p">()</span>
+                <span class="n">cur</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span>
+                    <span class="sd">&quot;&quot;&quot;CREATE TABLE IF NOT EXISTS bills</span>
+<span class="sd">                        (month TEXT,</span>
+<span class="sd">                        category TEXT,</span>
+<span class="sd">                        cost REAL,</span>
+<span class="sd">                        paid INT);&quot;&quot;&quot;</span>
+                <span class="p">)</span>
+                <span class="n">cur</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span>
+                    <span class="sd">&quot;&quot;&quot;CREATE TABLE IF NOT EXISTS roommates</span>
+<span class="sd">                        (month TEXT,</span>
+<span class="sd">                        time_spent REAL,</span>
+<span class="sd">                        name TEXT);&quot;&quot;&quot;</span>
+                <span class="p">)</span>
+        <span class="k">except</span> <span class="n">sqlite3</span><span class="o">.</span><span class="n">Error</span> <span class="k">as</span> <span class="n">err</span><span class="p">:</span>
+            <span class="n">print_error</span><span class="p">(</span><span class="n">err</span><span class="p">)</span>
+            <span class="k">return</span> <span class="kc">False</span>
         <span class="k">return</span> <span class="kc">True</span>
 </pre></div>
 
@@ -494,8 +482,6 @@ utility_calculator<wbr>.database    </h1>
 <span class="sd">            bool: True if the operation was successful, False upon failure</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># TODO: check for existing bills/give option to overwrite</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">db_exists</span><span class="p">():</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">create_database</span><span class="p">()</span>
         <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">connection</span> <span class="k">as</span> <span class="n">conn</span><span class="p">:</span>
             <span class="n">cur</span> <span class="o">=</span> <span class="n">conn</span><span class="o">.</span><span class="n">cursor</span><span class="p">()</span>
             <span class="n">cur</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span>
@@ -554,13 +540,11 @@ utility_calculator<wbr>.database    </h1>
 <span class="sd">        Returns:</span>
 <span class="sd">            bool: True if the operation was successful, False upon failure</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">db_exists</span><span class="p">():</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">create_database</span><span class="p">()</span>
         <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">connection</span> <span class="k">as</span> <span class="n">conn</span><span class="p">:</span>
             <span class="n">cur</span> <span class="o">=</span> <span class="n">conn</span><span class="o">.</span><span class="n">cursor</span><span class="p">()</span>
             <span class="n">cur</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s2">&quot;INSERT INTO roommates VALUES (?, ?, ?)&quot;</span><span class="p">,</span> <span class="p">(</span><span class="n">month</span><span class="p">,</span> <span class="n">time</span><span class="p">,</span> <span class="n">name</span><span class="p">))</span>
 
-        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Added </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2"> for </span><span class="si">{</span><span class="n">time</span><span class="si">:</span><span class="s2">0%</span><span class="si">}</span><span class="s2"> of </span><span class="si">{</span><span class="n">month</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Added </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2"> for </span><span class="si">{</span><span class="n">time</span><span class="si">:</span><span class="s2">1.0%</span><span class="si">}</span><span class="s2"> of </span><span class="si">{</span><span class="n">month</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
         <span class="k">return</span> <span class="kc">True</span>
 </pre></div>
 
@@ -590,12 +574,12 @@ utility_calculator<wbr>.database    </h1>
 
 
             <span class="def">def</span>
-            <span class="name">query_bills</span><span class="signature">(self, month: str)</span>:
+            <span class="name">query_bills</span><span class="signature">(self, month: str) -&gt; None</span>:
     </div>
 
                 <details>
             <summary>View Source</summary>
-            <div class="codehilite"><pre><span></span>    <span class="k">def</span> <span class="nf">query_bills</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">month</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+            <div class="codehilite"><pre><span></span>    <span class="k">def</span> <span class="nf">query_bills</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">month</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;Queries the bills for a given month</span>
 
 <span class="sd">        Args:</span>
@@ -626,12 +610,12 @@ utility_calculator<wbr>.database    </h1>
 
 
             <span class="def">def</span>
-            <span class="name">query_roommates</span><span class="signature">(self, month: str)</span>:
+            <span class="name">query_roommates</span><span class="signature">(self, month: str) -&gt; None</span>:
     </div>
 
                 <details>
             <summary>View Source</summary>
-            <div class="codehilite"><pre><span></span>    <span class="k">def</span> <span class="nf">query_roommates</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">month</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+            <div class="codehilite"><pre><span></span>    <span class="k">def</span> <span class="nf">query_roommates</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">month</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;Queries the roommates for a given month</span>
 
 <span class="sd">        Args:</span>
@@ -653,40 +637,6 @@ utility_calculator<wbr>.database    </h1>
 <ul>
 <li><strong>month (str):</strong>  The month to query roommates for</li>
 </ul>
-</div>
-
-
-                            </div>
-                            <div id="Database.db_exists" class="classattr">
-                                        <div class="attr function"><a class="headerlink" href="#Database.db_exists">#&nbsp;&nbsp</a>
-
-
-            <span class="def">def</span>
-            <span class="name">db_exists</span><span class="signature">(self) -&gt; bool</span>:
-    </div>
-
-                <details>
-            <summary>View Source</summary>
-            <div class="codehilite"><pre><span></span>    <span class="k">def</span> <span class="nf">db_exists</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Creates the database if it doesn&#39;t exist</span>
-
-<span class="sd">        Returns:</span>
-<span class="sd">            bool: True if the database exists, False if it doesn&#39;t</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">location</span><span class="p">):</span>
-            <span class="k">return</span> <span class="kc">False</span>
-        <span class="k">return</span> <span class="kc">True</span>
-</pre></div>
-
-        </details>
-
-            <div class="docstring"><p>Creates the database if it doesn't exist</p>
-
-<h6 id="returns">Returns</h6>
-
-<blockquote>
-  <p>bool: True if the database exists, False if it doesn't</p>
-</blockquote>
 </div>
 
 

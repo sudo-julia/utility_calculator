@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
 """utilities that would clutter the main file"""
 import re
-from typing import Pattern, Tuple
+import sys
+from typing import Pattern, Tuple, Union
 
 
 def choose(prompt: str, options: Tuple) -> str:
@@ -77,3 +78,12 @@ def get_month() -> str:
         if re.search(month_regex, month):
             return month
         print("Please enter month as 'YYYY-MM' (ex: 2021-10)")
+
+
+def print_error(error: Union[str, Exception]) -> None:
+    """Prints a message to stderr
+
+    Args:
+        error (str): The error message to print
+    """
+    print(error, file=sys.stderr)

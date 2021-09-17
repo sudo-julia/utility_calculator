@@ -4,22 +4,30 @@ from utility_calculator import database
 import utility_calculator.misc as misc
 
 
-def menu():
+def menu() -> None:
     """Run the main menu"""
     print("\nSelect from the following menu options:")
-    selection: str = misc.choose(
-        "1. Utility Calculator (u)\n2. New Roommate (n)\n3. Exit (e)\n> ",
-        ("u", "n", "e"),
+    menu_str = """
+    1. Utility Calculator (u)\n2. New Roommate (r)\n3. New Bill (b)\n3. Exit (e)\n>
+    """.strip(
+        "\n"
     )
-    if selection == "u":
-        utility_calc()
-    elif selection == "n":
-        new_person()
-    elif selection == "e":
-        raise SystemExit
+    while True:
+        selection: str = misc.choose(
+            menu_str,
+            ("u", "r", "b", "e"),
+        )
+        if selection == "u":
+            utility_calc()
+        elif selection == "r":
+            new_roommate()
+        elif selection == "b":
+            new_bill()
+        elif selection == "e":
+            break
 
 
-def utility_calc(quick: bool = False):
+def utility_calc(quick: bool = False) -> None:
     """Calculates the cost of utilties
 
     Args:
@@ -53,7 +61,7 @@ def utility_calc(quick: bool = False):
         raise SystemExit
 
 
-def sum_utilities(total: float):
+def sum_utilities(total: float) -> None:
     """Performs the calculation of utilities
 
     Args:
@@ -64,7 +72,8 @@ def sum_utilities(total: float):
     raise NotImplementedError
 
 
-def new_bill():
+# TODO: for new_{bill,person} return True or False based off success
+def new_bill() -> None:
     """UI for adding a bill to the database"""
     # TODO: (jam) let the user manually input the type of bill
     #            once the database has entries, it can suggest from existing bill types
@@ -87,10 +96,10 @@ def new_bill():
         print("Restarting selection process.")
 
     if not database.add_bill(month, category, cost, paid):
-        print(f"Failed to add {category} bill to the database.")
+        misc.print_error(f"Failed to add {category} bill to the database.")
 
 
-def new_person():
+def new_roommate() -> None:
     """UI for adding a roommate to the database"""
     while True:
         month: str = misc.get_month()
@@ -104,7 +113,7 @@ def new_person():
             break
 
     if not database.add_roommate(month, time_spent, name):
-        print(f"Failed to add {name} to the database.")
+        misc.print_error(f"Failed to add {name} to the database.")
 
 
 # Total cost of utilties -> calculate kiln cost, subtract kiln cost

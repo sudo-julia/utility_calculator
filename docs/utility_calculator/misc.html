@@ -47,9 +47,13 @@
             <li>
                     <a class="function" href="#get_month">get_month</a>
             </li>
+            <li>
+                    <a class="function" href="#print_error">print_error</a>
+            </li>
     </ul>
 
 
+                    <footer>Calculate your utilities bill with ease</footer>
 
                     <a class="attribution" title="pdoc: Python API documentation generator" href="https://pdoc.dev">
                         built with <span class="visually-hidden">pdoc</span><img
@@ -71,7 +75,8 @@ utility_calculator<wbr>.misc    </h1>
             <div class="codehilite"><pre><span></span><span class="c1"># -*- coding: utf-8 -*-</span>
 <span class="sd">&quot;&quot;&quot;utilities that would clutter the main file&quot;&quot;&quot;</span>
 <span class="kn">import</span> <span class="nn">re</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Pattern</span><span class="p">,</span> <span class="n">Tuple</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Pattern</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Union</span>
 
 
 <span class="k">def</span> <span class="nf">choose</span><span class="p">(</span><span class="n">prompt</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">options</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
@@ -147,6 +152,15 @@ utility_calculator<wbr>.misc    </h1>
         <span class="k">if</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">month_regex</span><span class="p">,</span> <span class="n">month</span><span class="p">):</span>
             <span class="k">return</span> <span class="n">month</span>
         <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Please enter month as &#39;YYYY-MM&#39; (ex: 2021-10)&quot;</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">print_error</span><span class="p">(</span><span class="n">error</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="ne">Exception</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Prints a message to stderr</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        error (str): The error message to print</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">error</span><span class="p">,</span> <span class="n">file</span><span class="o">=</span><span class="n">sys</span><span class="o">.</span><span class="n">stderr</span><span class="p">)</span>
 </pre></div>
 
         </details>
@@ -363,6 +377,38 @@ utility_calculator<wbr>.misc    </h1>
 <blockquote>
   <p>str: A month of a year, formatted as 'YYYY-MM'</p>
 </blockquote>
+</div>
+
+
+                </section>
+                <section id="print_error">
+                            <div class="attr function"><a class="headerlink" href="#print_error">#&nbsp;&nbsp</a>
+
+
+            <span class="def">def</span>
+            <span class="name">print_error</span><span class="signature">(error: Union[str, Exception]) -&gt; None</span>:
+    </div>
+
+                <details>
+            <summary>View Source</summary>
+            <div class="codehilite"><pre><span></span><span class="k">def</span> <span class="nf">print_error</span><span class="p">(</span><span class="n">error</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="ne">Exception</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Prints a message to stderr</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        error (str): The error message to print</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">error</span><span class="p">,</span> <span class="n">file</span><span class="o">=</span><span class="n">sys</span><span class="o">.</span><span class="n">stderr</span><span class="p">)</span>
+</pre></div>
+
+        </details>
+
+            <div class="docstring"><p>Prints a message to stderr</p>
+
+<h6 id="args">Args</h6>
+
+<ul>
+<li><strong>error (str):</strong>  The error message to print</li>
+</ul>
 </div>
 
 
